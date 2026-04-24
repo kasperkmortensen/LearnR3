@@ -9,3 +9,5 @@
 .quarto
 *.html
 *_files
+data-raw/nurses-stress.tar
+data-raw/nurses-stress/
