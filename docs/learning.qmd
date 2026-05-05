@@ -11,6 +11,8 @@ library(tidyverse)
 library(here)
 library(snakecase)
 
+source(here("R/functions.R"))
+
 # {r setup} tells R to run this chunk first
 ```
 
@@ -84,6 +86,7 @@ add_numbers(1, 2)
 
 ## Import 5C's HR data with a function
 ```{r}
+#| eval: false
 # When making names, check in console ?name if the name exists
 
 #' Read in one nurses' stress data file.
@@ -114,6 +117,7 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 
 ## Add max rows to the function
 ```{r}
+#| eval: false
 # When making names, check in console ?name if the name exists
 
 #' Read in one nurses' stress data file.
@@ -125,9 +129,9 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 #'
 read <- function(file_path, max_rows = 100) {
   data <- file_path |>
-    read_csv(
+    readr::read_csv(
       show_col_types = FALSE,
-      name_repair = to_snake_case,
+      name_repair = snakecase::to_snake_case,
       n_max = max_rows
     )
   return(data)
@@ -146,8 +150,11 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
 ```
 
-## Play around a bit
+
 ```{r}
+## Play around a bit
+#| eval: false
+
 # When making names, check in console ?name if the name exists
 
 #' Read in one nurses' stress data file.
