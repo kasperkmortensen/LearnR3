@@ -1,4 +1,5 @@
 library(here)
+library(readr)
 
 # The dataset can be downloaded manually from
 # <https://drive.proton.me/urls/ZHZ6TCAN2W#e5D5U4IajdYp>.
@@ -9,3 +10,11 @@ untar(
   here("data-raw/nurses-stress.tar"),
   exdir = here("data-raw/nurses-stress/")
 )
+
+
+r3::check_setup()
+r3::check_project_setup_intermediate()
+
+
+
+

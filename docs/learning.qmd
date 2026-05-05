@@ -1,15 +1,36 @@
 ---
 title: "Draft Quarto document"
-author: "Your Name"
+author: "Kasper Mortensen"
 format: html
 ---
 
 ## Header 1
 
 ```{r setup}
-#| include: false
+library(tidyverse)
+library(here)
+library(snakecase)
+
+# {r setup} tells R to run this chunk first
 ```
 
+## Importing new data
+
 ```{r}
-# Code chunk
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |> 
+  read_csv(show_col_types = FALSE,
+           name_repair = to_snake_case) # does the same as clean_names?
+  
+
+## NOTES ##
+# snakecase -> all lower letters separated by _
+# camelCase
+# PascalCase
 ```
+
+
+
+
+
+
+
