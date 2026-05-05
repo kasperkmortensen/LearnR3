@@ -20,7 +20,7 @@ library(snakecase)
 here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
   read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case, # does the same as clean_names?
+    name_repair = to_snake_case, # does the same as clean_names, needs to library(snakecase)
     n_max = 100
   )
 
@@ -36,26 +36,26 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case # does the same as clean_names?
+    name_repair = to_snake_case # does the same as clean_names from janitor
   )
 
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case, # does the same as clean_names?
+    name_repair = to_snake_case,
     n_max = 100
   )
 
 here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
   read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case # does the same as clean_names?
+    name_repair = to_snake_case
   )
 
 here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
   read_csv(
     show_col_types = FALSE,
-    name_repair = to_snake_case, # does the same as clean_names?
+    name_repair = to_snake_case,
     n_max = 100
   )
 ```
@@ -63,6 +63,10 @@ here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
 ## Making a function to add numbers
 
 ```{r}
+# Roxygen skeleton (choose from palette with cursor inside the function)
+# -> @export and @examples is for packages so they are deleted below
+# A way of describing what the function does
+
 #' Add two numbers together.
 #'
 #' @param num1 A number here.
@@ -77,3 +81,32 @@ add_numbers <- function(num1, num2) {
 
 add_numbers(1, 2)
 ```
+
+## Import 5C's HR data with a function
+```{r}
+# When making names, check in console ?name if the name exists
+
+#' Read in one nurses' stress data file.
+#'
+#' @param file_path Path to the data file.
+#'
+#' @returns Outputs a data frame/tibble.
+#'
+read <- function(filepath) {
+  data <- filepath |>
+    read_csv(
+      show_col_types = FALSE,
+      name_repair = to_snake_case,
+      n_max = 100
+    )
+  return(data)
+}
+```
+
+```{r}
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
+  read()
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read()
+```
+
