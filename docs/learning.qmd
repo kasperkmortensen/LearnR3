@@ -58,5 +58,22 @@ here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
     name_repair = to_snake_case, # does the same as clean_names?
     n_max = 100
   )
+```
 
+## Making a function to add numbers
+
+```{r}
+#' Add two numbers together.
+#'
+#' @param num1 A number here.
+#' @param num2 A number here.
+#'
+#' @returns Returns the sum of the two numbers.
+#'
+add_numbers <- function(num1, num2) {
+  added <- num1 + num2
+  return(added)
+}
+
+add_numbers(1, 2)
 ```
