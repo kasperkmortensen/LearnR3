@@ -17,20 +17,46 @@ library(snakecase)
 ## Importing new data
 
 ```{r}
-here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |> 
-  read_csv(show_col_types = FALSE,
-           name_repair = to_snake_case) # does the same as clean_names?
-  
+here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
+  read_csv(
+    show_col_types = FALSE,
+    name_repair = to_snake_case, # does the same as clean_names?
+    n_max = 100
+  )
+
 
 ## NOTES ##
-# snakecase -> all lower letters separated by _
+# snakecase -> all lower letters separated by _ (best practice)
 # camelCase
 # PascalCase
 ```
 
+## Exercise: Reading other files.
+```{r}
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read_csv(
+    show_col_types = FALSE,
+    name_repair = to_snake_case # does the same as clean_names?
+  )
 
+here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
+  read_csv(
+    show_col_types = FALSE,
+    name_repair = to_snake_case, # does the same as clean_names?
+    n_max = 100
+  )
 
+here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
+  read_csv(
+    show_col_types = FALSE,
+    name_repair = to_snake_case # does the same as clean_names?
+  )
 
+here("data-raw/nurses-stress/stress/6B/6B_1587569373/EDA.csv.gz") |>
+  read_csv(
+    show_col_types = FALSE,
+    name_repair = to_snake_case, # does the same as clean_names?
+    n_max = 100
+  )
 
-
-
+```
