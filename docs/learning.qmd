@@ -92,15 +92,17 @@ add_numbers(1, 2)
 #'
 #' @returns Outputs a data frame/tibble.
 #'
-read <- function(filepath) {
-  data <- filepath |>
-    read_csv(
+read <- function(file_path) {
+  data <- file_path |>
+    readr::read_csv( # readr:: added at the end of day 1
       show_col_types = FALSE,
-      name_repair = to_snake_case,
+      name_repair = snakecase::to_snake_case,
       n_max = 100
     )
   return(data)
 }
+
+# don't load packages inside functions
 ```
 
 ```{r}
@@ -121,8 +123,8 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 #'
 #' @returns Outputs a data frame/tibble.
 #'
-read <- function(filepath, max_rows = 100) {
-  data <- filepath |>
+read <- function(file_path, max_rows = 100) {
+  data <- file_path |>
     read_csv(
       show_col_types = FALSE,
       name_repair = to_snake_case,
@@ -142,4 +144,27 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
 # Outputs all rows (`Inf` means infinity)
 here("data-raw/nurses-stress/stress/5C/5C_1586886712/HR.csv.gz") |>
   read(max_rows = Inf)
+```
+
+## Play around a bit
+```{r}
+# When making names, check in console ?name if the name exists
+
+#' Read in one nurses' stress data file.
+#'
+#' @param file_path Path to the data file.
+#' @param max_rows max number of rows loaded
+#'
+#' @returns Outputs a data frame/tibble.
+#'
+read <- function(file_path, max_rows = 100) {
+  data <- read_csv(file_path,
+    show_col_types = FALSE,
+    name_repair = to_snake_case,
+    n_max = max_rows
+  )
+  return(data)
+}
+# above works as well, and does the same according to the instructor. The other way
+# with piping might be better, especially when you copy and paste function
 ```

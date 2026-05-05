@@ -5,3 +5,9 @@ Version: 0.0.1
 Encoding: UTF-8
 URL: https://github.com/kasperkmortensen/LearnR3
 BugReports: https://github.com/kasperkmortensen/LearnR3/issues
+Imports: 
+    here,
+    readr,
+    snakecase
+Depends: 
+    tidyverse
