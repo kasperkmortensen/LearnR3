@@ -178,6 +178,8 @@ read <- function(file_path, max_rows = 100) {
 
 ## Day 2 - Using map
 ```{r}
+#| eval: false
+
 hr_files <- here("data-raw/nurses-stress/") |>
   fs::dir_ls(regexp = "HR.csv.gz", recurse = TRUE) # recurse -> If TRUE recurse fully, if a positive number the number of levels to recurse
 
@@ -189,9 +191,27 @@ hr_data <- hr_files |>
 
 # hr_data is a list, others map_lgl, map_dbl and so on return other stuff
 
-hr_data[[1]] # look at a specific element using [[]] when the element is a list
+# hr_data[[1]] # look at a specific element using [[]] when the element is a list
 
-hr_data
+# hr_data # shows all data but too heavy
+
+#' Read all data based on filename
+#'
+#' @param filename tyoe of data
+#'
+#' @returns Returns a dataframe including all data of the specific type
+read_all <- function(filename) {
+  files <- here("data-raw/nurses-stress/") |>
+    fs::dir_ls(regexp = filename, recurse = TRUE)
+  data <- files |>
+    purrr::map(read) |>
+    purrr::list_rbind(names_to = "file_path_id")
+  return(data)
+}
+
+hr_data <- read_all("HR.csv.gz")
+eda_data <- read_all("EDA.csv.gz")
+bvp_data <- read_all("BVP.csv.gz")
 ```
 
 # Notes

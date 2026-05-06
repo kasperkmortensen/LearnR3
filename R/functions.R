@@ -14,3 +14,17 @@ read <- function(file_path, max_rows = 100) {
     )
   return(data)
 }
+
+#' Read all data based on filename
+#'
+#' @param filename tyoe of data
+#'
+#' @returns Returns a dataframe including all data of the specific type
+read_all <- function(filename) {
+  files <- here("data-raw/nurses-stress/") |>
+    fs::dir_ls(regexp = filename, recurse = TRUE)
+  data <- files |>
+    purrr::map(read) |>
+    purrr::list_rbind(names_to = "file_path_id")
+  return(data)
+}
