@@ -11,6 +11,7 @@ Imports:
     lubridate,
     purrr,
     readr,
-    snakecase
+    snakecase,
+    tidyselect
 Depends: 
     tidyverse
