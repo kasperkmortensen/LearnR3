@@ -1,5 +1,5 @@
 ---
-title: "Draft Quarto document"
+title: "Intermediate R course DDEA"
 author: "Kasper Mortensen"
 format: html
 ---
@@ -10,6 +10,7 @@ format: html
 library(tidyverse)
 library(here)
 library(snakecase)
+library(fs)
 
 source(here("R/functions.R"))
 
@@ -25,7 +26,6 @@ here("data-raw/nurses-stress/stress/5C/5C_1586886626/HR.csv.gz") |>
     name_repair = to_snake_case, # does the same as clean_names, needs to library(snakecase)
     n_max = 100
   )
-
 
 ## NOTES ##
 # snakecase -> all lower letters separated by _ (best practice)
@@ -175,3 +175,24 @@ read <- function(file_path, max_rows = 100) {
 # above works as well, and does the same according to the instructor. The other way
 # with piping might be better, especially when you copy and paste function
 ```
+
+## Day 2 - Using map
+```{r}
+hr_files <- here("data-raw/nurses-stress/") |>
+  fs::dir_ls(regexp = "HR.csv.gz", recurse = TRUE) # recurse -> If TRUE recurse fully, if a positive number the number of levels to recurse
+
+hr_files
+
+hr_data <- hr_files |>
+  purrr::map(read) |> # remember not to use ()
+  purrr::list_rbind(names_to = "file_path_id") # names_to take filepath
+
+# hr_data is a list, others map_lgl, map_dbl and so on return other stuff
+
+hr_data[[1]] # look at a specific element using [[]] when the element is a list
+
+hr_data
+```
+
+# Notes
+Don't use for loops at all -> use purr package and functionals (applying a function to a vector(multiple objects))
