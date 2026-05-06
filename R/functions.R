@@ -28,3 +28,24 @@ read_all <- function(filename) {
     purrr::list_rbind(names_to = "file_path_id")
   return(data)
 }
+
+#' Get participant ID
+#'
+#' @param data The data we want to extract id from
+#'
+#' @returns new dataframe with a id column and no file_path_id
+
+get_participant_id <- function(data) {
+  data <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        pattern = "/stress/[:alnum:]{2}/"   # {2} -> find exactly 2 of the thing we asked for
+      ) |>
+        stringr::str_remove("/stress/") |>
+        stringr::str_remove("/"),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data)
+}

@@ -214,5 +214,66 @@ eda_data <- read_all("EDA.csv.gz")
 bvp_data <- read_all("BVP.csv.gz")
 ```
 
+# inspecting data
+```{r}
+hr_data <- read_all("HR.csv.gz")
+
+survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read()
+
+hr_data
+survey_data
+```
+
+## extracting id
+```{r}
+hr_data |>
+  dplyr::mutate(
+    id = stringr::str_extract(
+      file_path_id,
+      pattern = "/stress/[:alnum:]{2}/" # {2} -> find exactly 2 of the thing we asked for
+    ) |>
+      str_remove("/stress/") |>
+      str_remove("/"),
+    .before = file_path_id
+  ) |>
+  dplyr::select(-file_path_id)
+```
+
+## get id as a function
+```{r}
+#| eval: false
+
+#' Get participant ID
+#'
+#' @param data The data we want to extract id from
+#'
+#' @returns new dataframe with a id column and no file_path_id
+
+get_participant_id <- function(data) {
+  data <- data |>
+    dplyr::mutate(
+      id = stringr::str_extract(
+        file_path_id,
+        pattern = "/stress/[:alnum:]{2}/" # {2} -> find exactly 2 of the thing we asked for
+      ) |>
+        stringr::str_remove("/stress/") |>
+        stringr::str_remove("/"),
+      .before = file_path_id
+    ) |>
+    dplyr::select(-file_path_id)
+  return(data)
+}
+
+bvp_data <- read_all("BVP.csv.gz") |>
+  get_participant_id()
+
+bvp_data
+```
+
+
 # Notes
 Don't use for loops at all -> use purr package and functionals (applying a function to a vector(multiple objects))
+
+DUCKDB is much faster than data.table
+You can use pipes within mutate (see ## extracting id)
