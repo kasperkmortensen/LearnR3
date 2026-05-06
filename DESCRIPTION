@@ -8,6 +8,7 @@ BugReports: https://github.com/kasperkmortensen/LearnR3/issues
 Imports: 
     fs,
     here,
+    lubridate,
     purrr,
     readr,
     snakecase

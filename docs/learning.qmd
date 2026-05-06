@@ -255,7 +255,7 @@ get_participant_id <- function(data) {
     dplyr::mutate(
       id = stringr::str_extract(
         file_path_id,
-        pattern = "/stress/[:alnum:]{2}/"   # {2} -> find exactly 2 of the thing we asked for
+        pattern = "/stress/[:alnum:]{2}/" # {2} -> find exactly 2 of the thing we asked for
       ) |>
         stringr::str_remove("/stress/") |>
         stringr::str_remove("/"),
@@ -292,10 +292,65 @@ bvp_data <- read_all("BVP.csv.gz") |>
 bvp_data
 ```
 
+## Working with across
+```{r}
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id()
+
+hr_data
+
+hr_data |>
+  summarise(across(hr, mean))
+
+hr_data |>
+  summarise(
+    across(
+      hr,
+      list(mean = mean, median = median, sd = sd) # with 'list' we can give it names
+    )
+  )
+
+hr_data |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, median = median, sd = sd)
+    )
+  )
+```
+
+
+## Working with dates
+```{r}
+hr_data |>
+  mutate(
+    datetime = lubridate::round_date(collection_datetime, unit = "minutes"),
+    .before = collection_datetime
+  )
+```
+
+## summarising within groups
+```{r}
+hr_data |>
+  mutate(
+    collection_datetime = lubridate::round_date(
+      collection_datetime,
+      unit = "minute"
+    )
+  ) |>
+  summarise(
+    across(
+      where(is.numeric),
+      list(mean = mean, sd = sd, median = median)
+    ),
+    .by = c(id, collection_datetime)
+  )
+```
+
 
 # Notes
-Don't use for loops at all -> use purr package and functionals (applying a function to a vector(multiple objects))
+Don't use 'for loops' at all -> use purrr package and functionals like map() (applying a function to a vector(multiple objects))
 
-DUCKDB is much faster than data.table
+duckdb is much faster than data.table
 
 You can use pipes within mutate (see ## extracting id)
