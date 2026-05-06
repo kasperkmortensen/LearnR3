@@ -40,10 +40,8 @@ get_participant_id <- function(data) {
     dplyr::mutate(
       id = stringr::str_extract(
         file_path_id,
-        pattern = "/stress/[:alnum:]{2}/"   # {2} -> find exactly 2 of the thing we asked for
-      ) |>
-        stringr::str_remove("/stress/") |>
-        stringr::str_remove("/"),
+        pattern = "(?<=/stress/)[:alnum:]{2}(?=/)" # {2} -> find exactly 2 of the thing we asked for
+      ),
       .before = file_path_id
     ) |>
     dplyr::select(-file_path_id)
