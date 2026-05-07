@@ -525,7 +525,7 @@ tidy_survey_dates <- function(data) {
 survey_to_long <- function(data) {
   longer <- data |>
     dplyr::select(id, datetime_id, start_datetime, end_datetime) |>
-    tidyr::pivot_longer(c(start_datetime, end_datetime),
+    tidyr::pivot_longer(ends_with("datetime"),
       names_to = NULL,
       values_to = "collection_datetime"
     ) |>
@@ -543,6 +543,36 @@ survey_to_long <- function(data) {
 
 survey_tidy <- tidy_survey_dates(survey_data)
 survey_long <- survey_to_long(survey_tidy)
+```
+
+## Joining datasets
+```{r}
+survey_long |> 
+  left_join(survey_tidy)
+
+survey_tidy |> 
+  count(id, datetime_id) |> 
+  filter(n>1)
+
+survey_long |> 
+  right_join(survey_tidy)
+
+survey_long |> 
+  full_join(survey_tidy)
+
+# right, left and full will give the same amount of rows in our case because the 
+# two datasets perfectly align
+
+# best practice is to do left_join
+
+nurses_stress <- survey_long |> 
+  full_join(survey_tidy) |> 
+  full_join(hr_data)
+
+nurses_stress |> 
+  arrange(id, collection_datetime) |> 
+  View()
+
 ```
 
 
