@@ -355,25 +355,197 @@ hr_data |>
 #'
 #' @returns summarised data by id and collection_datetime (minutes)
 
-summarise_by_datetime <- function(data) {
+summarise_by_datetime <- function(data, unit = "minutes") {
   summarised_data <- data |>
     dplyr::mutate(
-    collection_datetime = lubridate::round_date(
-      collection_datetime,
-      unit = "minute"
+      collection_datetime = lubridate::round_date(
+        collection_datetime,
+        unit = unit
+      )
+    ) |>
+    dplyr::summarise(
+      dplyr::across(
+        tidyselect::where(is.numeric),
+        list(mean = mean, sd = sd, median = median)
+      ),
+      .by = c(id, collection_datetime)
     )
-  ) |>
-  dplyr::summarise(
-    dplyr::across(
-      tidyselect::where(is.numeric),
-      list(mean = mean, sd = sd, median = median)
-    ),
-    .by = c(id, collection_datetime)
-  )
   return(summarised_data)
 }
-
 ```
+
+```{r}
+#| eval: false
+
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+ibi_data <- read_all("IBI.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+temp_data <- read_all("TEMP.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+bvp_data <- read_all("BVP.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+eda_data <- read_all("EDA.csv.gz") |>
+  get_participant_id() |>
+  summarise_by_datetime()
+
+# making the above as a function
+
+read_sensor_data <- function(filename) {
+  data <- read_all(filename) |>
+    get_participant_id() |>
+    summarise_by_datetime()
+  return(data)
+}
+
+# modify to be able to change unit
+#' Read_sensor_data
+#'
+#' @param filename name of file
+#' @param unit unit of datetime
+#'
+#' @returns dataframe that has id and is summarised by datetime
+
+read_sensor_data <- function(filename, unit) {
+  data <- read_all(filename) |>
+    get_participant_id() |>
+    summarise_by_datetime(unit = unit)
+  return(data)
+}
+```
+
+
+## extra exercise 20.10
+```{r}
+#| eval: false
+
+# don't run this chunk because the function is different in the functions.R file
+hr_data <- read_all("HR.csv.gz") |>
+  get_participant_id()
+
+summarise_by_datetime(
+  data = hr_data,
+  fns = list(median = median),
+  unit = "minutes"
+)
+
+summarise_by_datetime(
+  data = hr_data,
+  fns = mean,
+  unit = "minutes"
+)
+
+summarise_by_datetime(
+  data = hr_data,
+  fns = list(max = max, min = min),
+  unit = "minutes"
+)
+```
+
+## Pivot longer
+```{r}
+survey_data <- here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read()
+survey_data
+
+survey_data |>
+  mutate(
+    date = mdy(date),
+    start_datetime = as_datetime(
+      paste(
+        date, start_time
+      )
+    ),
+    end_datetime = as_datetime(
+      paste(
+        date, end_time
+      )
+    ),
+    .before = start_time
+  )
+
+survey_tidy <- survey_data |>
+  mutate(
+    date = lubridate::mdy(date),
+    start_datetime = lubridate::as_datetime(paste(date, start_time)),
+    end_datetime = lubridate::as_datetime(paste(date, end_time)),
+    datetime_id = start_datetime,
+    .before = start_time
+  ) |>
+  dplyr::select(-c(date, start_time, end_time, duration))
+
+survey_long <- survey_tidy |>
+  select(id, datetime_id, start_datetime, end_datetime) |>
+  tidyr::pivot_longer(c(start_datetime, end_datetime),
+    names_to = NULL,
+    values_to = "collection_datetime"
+  ) |>
+  group_by(dplyr::pick(-collection_datetime)) |>
+  tidyr::complete(
+    collection_datetime = seq(
+      min(collection_datetime),
+      max(collection_datetime),
+      by = 60
+    )
+  ) |>
+  ungroup()
+```
+
+## making the above into functions
+```{r}
+#| eval: false
+
+#' tidy_survey_dates
+#'
+#' @param data dataframe survey_data
+#'
+#' @returns a tidy dataframe
+tidy_survey_dates <- function(data) {
+  tidied <- data |>
+    dplyr::mutate(
+      date = lubridate::mdy(date),
+      start_datetime = lubridate::as_datetime(paste(date, start_time)),
+      end_datetime = lubridate::as_datetime(paste(date, end_time)),
+      datetime_id = start_datetime,
+      .before = start_time
+    ) |>
+    dplyr::select(-c(date, start_time, end_time, duration))
+  return(tidied)
+}
+
+#' survey_to_long
+#'
+#' @param data tidy dataframe on survey
+#'
+#' @returns survey data in a longer format dataframe
+survey_to_long <- function(data) {
+  longer <- data |>
+    dplyr::select(id, datetime_id, start_datetime, end_datetime) |>
+    tidyr::pivot_longer(c(start_datetime, end_datetime),
+      names_to = NULL,
+      values_to = "collection_datetime"
+    ) |>
+    dplyr::group_by(dplyr::pick(-collection_datetime)) |>
+    tidyr::complete(
+      collection_datetime = seq(
+        min(collection_datetime),
+        max(collection_datetime),
+        by = 60
+      )
+    ) |>
+    dplyr::ungroup()
+  return(longer)
+}
+
+survey_tidy <- tidy_survey_dates(survey_data)
+survey_long <- survey_to_long(survey_tidy)
+```
+
+
 
 # Notes
 Don't use 'for loops' at all -> use purrr package and functionals like map() (applying a function to a vector(multiple objects))

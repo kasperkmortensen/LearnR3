@@ -1,6 +1,6 @@
 ---
-title: "Draft Quarto document"
-author: "Your Name"
+title: "Cleaning - Intermediate R Course"
+author: "Kasper Mortensen"
 format: html
 ---
 
@@ -8,8 +8,27 @@ format: html
 
 ```{r setup}
 #| include: false
+source(here::here("R/functions.R"))
 ```
 
+## Prepare HR data
+
 ```{r}
-# Code chunk
+list_summarise_on <- list(mean = mean, median = median, sd = sd)
+
+hr_data <- read_sensor_data(filename = "HR.csv.gz", fns = list_summarise_on, unit = "minutes")
+ibi_data <- read_sensor_data(filename = "IBI.csv.gz", fns = list_summarise_on, unit = "minutes")
+temp_data <- read_sensor_data(filename = "TEMP.csv.gz", fns = list_summarise_on, unit = "minutes")
+bvp_data <- read_sensor_data(filename = "BVP.csv.gz", fns = list_summarise_on, unit = "minutes")
+eda_data <- read_sensor_data(filename = "EDA.csv.gz", fns = list_summarise_on, unit = "minutes")
+```
+
+## Process survey data
+```{r}
+survey_tidy <- here::here("data-raw/nurses-stress/survey-results.csv.gz") |>
+  read() |> 
+  tidy_survey_dates()
+
+survey_long <- survey_tidy |>
+  survey_to_long()
 ```
